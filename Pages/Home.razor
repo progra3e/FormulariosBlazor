@@ -1,0 +1,87 @@
+﻿@page "/"
+@using Models
+
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+<h1>New Ship Entry Form</h1>
+
+<EditForm Model="@starship" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col col-4">
+                <label for="identifier" class="form-label">Identificador: </label>
+                <InputText id="identifier" class="form-control" @bind-Value="starship.Identifier" />
+                <ValidationMessage For="() => starship.Identifier" />
+            </div>
+            <div class="col col-8">
+                <label for="description">Description (optional): </label>
+                <InputTextArea id="description" class="form-control" @bind-Value="starship.Description" />
+            </div>            
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <label for="classification">Primary Classification: </label>
+                <InputSelect id="classification" class="form-select" @bind-Value="starship.Classification">
+                    <option value="">Select classification ...</option>
+                    <option value="Exploration">Exploration</option>
+                    <option value="Diplomacy">Diplomacy</option>
+                    <option value="Defense">Defense</option>
+                </InputSelect>
+                <ValidationMessage For="() => starship.Classification" />
+            </div>
+            <div class="col">
+                <label for="accommodation">Maximum Accommodation: </label>
+                <InputNumber id="accommodation" class="form-control" @bind-Value="starship.MaximumAccommodation" />
+                <ValidationMessage For="() => starship.MaximumAccommodation" />
+            </div>
+            <div class="col">
+                <label for="valid">Engineering Approval: </label>
+                <InputCheckbox id="valid" class="form-check-input" @bind-Value="starship.IsValidatedDesign" />
+                <ValidationMessage For="() => starship.IsValidatedDesign" />
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-4">
+                <label for="productionDate">Production Date: </label>
+                <InputDate id="productionDate" class="form-control" @bind-Value="starship.ProductionDate" />
+                <ValidationMessage For="() => starship.ProductionDate" />
+            </div>
+        </div>       
+        <div class="row mt-3 text-center">
+            <div class="col">
+                <button class="btn btn-secondary" type="submit">Guardar</button>
+            </div>
+        </div>
+    </div>    
+
+</EditForm>
+
+<Formularios.Componentes.StarshipComponent></Formularios.Componentes.StarshipComponent>
+
+
+@code {
+    private Starship starship = new Starship();
+    private List<Starship> starships = new List<Starship>();
+
+    private void Guardar()
+    {
+        starships.Add(starship);
+        // Guardar la lista de starships en LocalStorage como JSON
+        localStorage.SetItem("starships", starships);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Recuperar la lista de starships desde LocalStorage a una variable var
+        var savedStarships = localStorage.GetItem<List<Starship>>("starships");
+
+        // Validar si la lista fue recuperada correctamente, copiarla a la lista
+        if (savedStarships != null)
+        {
+            starships = savedStarships;
+        }
+    }
+
+}

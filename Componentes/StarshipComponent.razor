@@ -1,0 +1,49 @@
+﻿@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+@inject HttpClient Http
+
+@using Models;
+
+
+@if (starships == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Identificador</th>
+                <th>Descripción</th>
+                <th>Clasificación</th>
+                <th>Capacidad Max.</th>
+                <th>Fechas Producc.</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var starship in starships)
+            {
+                <tr>
+                    <td>@starship.Identifier</td>
+                    <td>@starship.Description</td>
+                    <td>@starship.Classification</td>
+                    <td>@starship.MaximumAccommodation</td>
+                    <td>@starship.ProductionDate.ToShortDateString()</td> 
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Starship> starships = new List<Starship>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var savedStarships = localStorage.GetItem<List<Starship>>("starships");
+        if (savedStarships != null)
+        {
+            starships = savedStarships;
+        }
+    }
+}
